@@ -1,0 +1,18 @@
+/* General styling for the footer */
+.footer {
+    background-color: #2c3e50;  /* Dark background color */
+    color: #ecf0f1;  /* Light text color */
+    text-align: center;
+    padding: 20px;
+    position: fixed;  /* Make the footer stick at the bottom */
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Optional styling for the copyright text */
+  .footer p {
+    margin: 0;
+  }
+  
