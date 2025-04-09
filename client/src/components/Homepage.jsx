@@ -5,13 +5,15 @@ import '../styles/Homepage.css';
 function Homepage() {
   return (
     <div className="homepage">
-      <section className="hero">
-        <div className="hero-content">
-          <h1>Welcome to Weather Watch Lite ☀️</h1>
-          <p>Track weather in real time, save favorite locations, and get a 7-day forecast—wherever you are.</p>
-          <div className="hero-buttons">
-            <Link to="/signup" className="btn">Get Started</Link>
-            <Link to="/login" className="btn btn-secondary">Login</Link>
+      <section className="hero-section">
+        <div className="hero-overlay">
+          <div className="hero-content">
+            <h1>Welcome to Weather Watch Lite ☀️</h1>
+            <p>Track weather in real time, save favorite locations, and get a 7-day forecast—wherever you are.</p>
+            <div className="hero-buttons">
+              <Link to="/signup" className="btn primary-btn">Get Started</Link>
+              <Link to="/login" className="btn secondary-btn">Login</Link>
+            </div>
           </div>
         </div>
       </section>
@@ -25,4 +27,5 @@ function Homepage() {
 }
 
 export default Homepage;
+
 

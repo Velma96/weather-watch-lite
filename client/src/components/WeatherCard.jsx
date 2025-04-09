@@ -19,6 +19,12 @@ function WeatherCard() {
         }
 
         const data = await response.json();
+
+        // Check if location data is valid
+        if (!data || !data.temp) {
+          throw new Error('Location not found');
+        }
+
         setWeather(data);
       } catch (err) {
         setError(err.message);  // Handle errors
@@ -48,4 +54,5 @@ function WeatherCard() {
 }
 
 export default WeatherCard;
+
 
