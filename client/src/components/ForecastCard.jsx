@@ -1,6 +1,26 @@
 import { useState, useEffect } from 'react';
 import '../styles/ForecastCard.css';
 
+// Get day of the week based on offset from today
+const getWeekdayName = (offset) => {
+  const today = new Date();
+  const forecastDate = new Date(today);
+  forecastDate.setDate(today.getDate() + (offset - 1));
+  return forecastDate.toLocaleDateString('en-US', { weekday: 'long' });
+};
+
+// Map weather condition to emoji
+const getWeatherIcon = (condition) => {
+  const lower = condition.toLowerCase();
+  if (lower.includes('sun') || lower.includes('clear')) return '☀️';
+  if (lower.includes('cloud')) return '☁️';
+  if (lower.includes('rain')) return '🌧️';
+  if (lower.includes('storm') || lower.includes('thunder')) return '⛈️';
+  if (lower.includes('snow')) return '❄️';
+  if (lower.includes('wind')) return '🌬️';
+  return '🌡️'; // default icon
+};
+
 function ForecastCard({ location }) {
   const [forecast, setForecast] = useState(null);
   const [error, setError] = useState(null);
@@ -33,9 +53,10 @@ function ForecastCard({ location }) {
         <div className="forecast-list">
           {forecast.map((day, index) => (
             <div key={index} className="forecast-day">
-              <p><strong>{day.date}</strong></p> 
-              <p>Temp: {day.temp}°C</p>
-              <p>Condition: {day.condition}</p>
+              <p><strong>{getWeekdayName(day.day)}</strong></p>
+              <p>Temp: {day.temperature}°C</p>
+              <p>Humidity: {day.humidity}%</p>
+              <p>Condition: {getWeatherIcon(day.condition)} {day.condition}</p>
             </div>
           ))}
         </div>
@@ -47,4 +68,5 @@ function ForecastCard({ location }) {
 }
 
 export default ForecastCard;
+
 

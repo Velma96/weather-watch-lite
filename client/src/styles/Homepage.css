@@ -1,60 +1,80 @@
 .homepage {
-    text-align: center;
-    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
+    color: #2c3e50;
   }
   
-  .hero {
+  .hero-section {
+    position: relative;
     background-image: url('https://source.unsplash.com/1600x900/?weather,sky');
     background-size: cover;
     background-position: center;
-    padding: 80px 20px;
-    color: white;
+    padding: 100px 20px;
+    text-align: center;
   }
   
-  .hero-content {
+  .hero-overlay {
     background-color: rgba(0, 0, 0, 0.6);
+    padding: 60px 20px;
+    border-radius: 12px;
     display: inline-block;
-    padding: 40px;
-    border-radius: 10px;
+    max-width: 800px;
+    margin: auto;
   }
   
-  .hero h1 {
+  .hero-content h1 {
     font-size: 3rem;
+    color: #fff;
     margin-bottom: 20px;
   }
   
-  .hero p {
+  .hero-content p {
     font-size: 1.2rem;
+    color: #eee;
     margin-bottom: 30px;
   }
   
+  .hero-buttons {
+    margin-top: 20px;
+  }
+  
   .hero-buttons .btn {
-    margin: 0 10px;
     padding: 12px 24px;
     font-size: 1rem;
-    border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     text-decoration: none;
-    background-color: #ff9800;
-    color: white;
     transition: background-color 0.3s ease;
+    margin: 0 10px;
+    display: inline-block;
   }
   
-  .hero-buttons .btn-secondary {
-    background-color: #2196f3;
+  .primary-btn {
+    background-color: #0077b6;
+    color: white;
   }
   
-  .hero-buttons .btn:hover {
-    opacity: 0.9;
+  .primary-btn:hover {
+    background-color: #005f8a;
+  }
+  
+  .secondary-btn {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .secondary-btn:hover {
+    background-color: #218838;
   }
   
   .preview-forecast {
-    padding: 40px 20px;
+    padding: 50px 20px;
+    text-align: center;
   }
   
   .preview-forecast h2 {
-    margin-bottom: 20px;
     font-size: 1.8rem;
+    margin-bottom: 20px;
   }
+  
   
   
