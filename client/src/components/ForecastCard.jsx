@@ -6,7 +6,6 @@ function ForecastCard({ location }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Use a Vite environment variable
     const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5555';
 
     fetch(`${apiUrl}/weather/forecast?location=${location}`)
@@ -34,7 +33,7 @@ function ForecastCard({ location }) {
         <div className="forecast-list">
           {forecast.map((day, index) => (
             <div key={index} className="forecast-day">
-              <p>{day.date}</p>
+              <p><strong>{day.date}</strong></p> 
               <p>Temp: {day.temp}°C</p>
               <p>Condition: {day.condition}</p>
             </div>
@@ -48,3 +47,4 @@ function ForecastCard({ location }) {
 }
 
 export default ForecastCard;
+
