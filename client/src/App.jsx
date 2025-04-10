@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Homepage from './components/Homepage'; // ✅ Import the Homepage
+import LocationForecast from './components/LocationForecast'; // ✅ Import the LocationForecast component
 import './styles/App.css';
 
 function App() {
@@ -24,13 +25,19 @@ function App() {
     <>
       <Navbar />
       <Routes>
-        {/* ✅ New homepage route */}
+        {/* ✅ Homepage route */}
         <Route path="/" element={<Homepage />} />
 
         {/* Dashboard route */}
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+        />
+
+        {/* Location Forecast Route */}
+        <Route
+          path="/forecast/:location" // Route for location-specific forecast
+          element={isAuthenticated ? <LocationForecast /> : <Navigate to="/login" />}
         />
 
         <Route
@@ -53,3 +60,4 @@ function App() {
 }
 
 export default App;
+

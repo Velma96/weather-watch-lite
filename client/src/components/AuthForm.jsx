@@ -1,79 +1,91 @@
-import { useState } from 'react';
-import '../styles/AuthForm.css'; 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/AuthForm.css";
 
-function AuthForm({ isLogin, onSubmit }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+const AuthForm = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  // Mock backend response simulation
-  const mockBackendResponse = (endpoint, email, password) => {
-    if (endpoint === '/users/signup') {
-      // Simulate successful sign-up response
-      return { token: 'mock-token-12345' };
-    } else if (endpoint === '/users/login') {
-      // Simulate successful login response
-      if (email === 'awuorphoebi@gmail.com' && password === 'Test1234!') {
-        return { token: 'mock-token-12345' };
-      } else {
-        throw new Error('Authentication failed. Invalid email or password.');
-      }
-    }
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ 
+      ...formData, 
+      [e.target.name]: e.target.value 
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
 
-    if (!email || !password) {
-      setError('Please fill in both fields.');
-      setLoading(false);
-      return;
-    }
-
-    const endpoint = isLogin ? '/users/login' : '/users/signup';
+    const newUser = {
+      username: formData.username,
+      email: formData.email,
+      password_hash: formData.password // Match your backend’s expected key
+    };
 
     try {
-      // Mock API Response
-      const data = mockBackendResponse(endpoint, email, password);
+      const res = await fetch("http://localhost:5555/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
 
-      if (data.token) {
-        onSubmit(data.token); // Pass token to parent component
-      } else {
-        setError('Authentication failed. No token received.');
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.message || "Registration failed.");
+        return;
       }
-    } catch (error) {
-      setError(error.message || 'An unexpected error occurred.');
-    } finally {
-      setLoading(false);
+
+      const data = await res.json();
+      console.log("Registered:", data);
+      navigate("/dashboard"); // or wherever you redirect post-auth
+    } catch (err) {
+      setError("Server error. Please try again later.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className="input-field"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        className="input-field"
-      />
-      <button type="submit" disabled={loading} className="submit-button">
-        {loading ? 'Loading...' : isLogin ? 'Log In' : 'Sign Up'}
-      </button>
-    </form>
+    <div className="auth-form-container">
+      <h2>Sign Up</h2>
+      {error && <p className="error">{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          name="username"
+          type="text"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password (min 6 chars)"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Create Account</button>
+      </form>
+    </div>
   );
-}
+};
 
 export default AuthForm;
+
 
