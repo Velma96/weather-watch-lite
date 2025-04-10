@@ -425,7 +425,19 @@ class WeatherDataResource(Resource):
                 if not weather:
                     return {"error": "No weather data available for this location"}, 404
                 
-                return weather.to_dict(), 200
+                # Changed from weather.to_dict() to explicit dictionary construction
+                return {
+                    "id": weather.id,
+                    "location_id": weather.location_id,
+                    "location_name": weather.location.location_name,
+                    "current_temperature": weather.current_temperature,
+                    "current_humidity": weather.current_humidity,
+                    "current_wind_speed": weather.current_wind_speed,
+                    "weather_condition": weather.weather_condition,
+                    "forecast_data": weather.forecast_data,
+                    "created_at": weather.created_at.isoformat(),
+                    "updated_at": weather.updated_at.isoformat() if weather.updated_at else None
+                }, 200
             
             # Get all weather data with basic info
             weather_data = WeatherData.query.all()
