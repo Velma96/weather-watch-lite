@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import SearchBar from './SearchBar';
-import ForecastCard from './ForecastCard';
 
 function Dashboard() {
   const [savedLocations, setSavedLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [redirect, setRedirect] = useState(false);
+
+  const navigate = useNavigate(); // Hook for navigation
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5555';
 
@@ -49,6 +50,11 @@ function Dashboard() {
 
   if (loading) return <div>Loading...</div>;
 
+  const handleLocationClick = (location) => {
+    // Navigate to the location-specific forecast page
+    navigate(`/forecast/${location}`);
+  };
+
   return (
     <div className="dashboard">
       <h2>Your Saved Locations</h2>
@@ -57,17 +63,22 @@ function Dashboard() {
       ) : (
         <ul>
           {savedLocations.map((location) => (
-            <li key={location.id}>{location.location_name}</li>
+            <li
+              key={location.id}
+              onClick={() => handleLocationClick(location.location_name)}
+              style={{ cursor: 'pointer' }}
+            >
+              {location.location_name}
+            </li>
           ))}
         </ul>
       )}
 
       <SearchBar />
-
-      {/* Display ForecastCard for the first saved location (or a default city) */}
-      <ForecastCard location={savedLocations[0]?.location_name || 'Nairobi'} />
     </div>
   );
 }
 
 export default Dashboard;
+
+
