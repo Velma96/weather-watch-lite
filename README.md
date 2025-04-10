@@ -1,217 +1,266 @@
-# Weather API
 
-## Description
-This is a RESTful API built with Flask that provides weather information, user management, saved locations, and search history functionalities. It uses Flask-RESTful for creating resources, SQLAlchemy for database interactions, and Werkzeug for password hashing.
+#  Weather Watch Lite
 
-## Features
-- **User Management**:
-  - Register, update, and delete users.
-  - Retrieve user details.
-- **Saved Locations**:
-  - Save, update, and delete user locations.
-  - Retrieve saved locations with associated weather data.
-- **Search Records**:
-  - Store user search queries with associated locations.
-  - Retrieve search history.
-- **Weather Data**:
-  - Store and retrieve weather information for specific locations.
+**Weather Watch Lite** is a full-stack weather tracking application built using **Flask** for the backend and **React + Vite** for the frontend. The app allows users to register, search weather conditions for any location, save their favorite cities, and view a detailed 7-day forecast—delivering both real-time insights and personalized weather tracking.
 
-## Technologies Used
-- **Flask**: A micro web framework for Python.
-- **Flask-RESTful**: An extension for building REST APIs with Flask.
-- **SQLAlchemy**: A Python SQL toolkit and Object-Relational Mapper.
-- **Flask-SQLAlchemy**: An extension that simplifies using SQLAlchemy with Flask.
-- **Flask-Migrate**: An extension that handles SQLAlchemy database migrations for Flask applications.
-- **Flask-Cors**: An extension for handling Cross-Origin Resource Sharing (CORS) in Flask applications.
-- **Faker**: A library for generating fake data.
-- **Werkzeug**: A comprehensive WSGI web application library used for password hashing.
+---
 
-## Database Schema
-The application uses the following data models:
-- **User**: Stores user information (username, email, password hash)
-- **SavedLocation**: Represents a location saved by a user
-- **WeatherData**: Contains weather information for a specific location
-- **SearchRecord**: Tracks user search history
-- **SearchLocationAssociation**: Junction table connecting search records with locations
+##  Project Structure
 
-## Setup
-
-1. **Clone the repository:**
-   ```
-   git clone https://github.com/Velma96/weather-watch-lite
-   cd server  # To work on the backend
-   ```
-
-2. **Create a virtual environment:**
-   ```
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies:**
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. **Environment Variables:**
-   Create a `.env` file in the root directory with the following variables:
-   ```
-   FLASK_APP=app.py
-   FLASK_ENV=development
-   DATABASE_URI=sqlite:///weather_api.db
-   SECRET_KEY=your_secret_key_here
-   ```
-
-5. **Set up the database:**
-   The application uses SQLite for database storage. The database URI is set in `app.py`.
-
-6. **Run migrations:**
-   ```
-   flask db init
-   flask db migrate
-   flask db upgrade
-   ```
-
-## Usage
-
-1. **Run the application:**
-   ```
-   python app.py
-   ```
-   The API will be accessible at `http://localhost:5555`.
-
-2. **Seed the database:**
-   To populate the database with sample data, run:
-   ```
-   python seed.py
-   ```
-
-## API Endpoints
-
-### User Resource
-- `GET /users`: Get all users.
-- `GET /users/<id>`: Get a specific user by ID.
-- `POST /users`: Create a new user.
-  - Required fields: `username`, `email`, `password`.
-- `PUT /users/<id>`: Update an existing user.
-  - Updatable fields: `username`, `email`, `password`.
-- `DELETE /users/<id>`: Delete a user.
-
-### Saved Location Resource
-- `GET /saved-locations`: Get all saved locations.
-- `GET /saved-locations/<id>`: Get a specific saved location by ID.
-- `POST /saved-locations`: Create a new saved location.
-  - Required fields: `user_id`, `location_name`.
-- `PUT /saved-locations/<id>`: Update an existing saved location.
-  - Updatable fields: `location_name`.
-- `DELETE /saved-locations/<id>`: Delete a saved location and associated weather data.
-
-### Search Record Resource
-- `GET /search-records`: Get all search records.
-- `GET /search-records/<id>`: Get a specific search record by ID.
-- `POST /search-records`: Create a new search record.
-  - Required fields: `user_id`, `query`.
-  - Optional fields: `location_ids` (list of saved location IDs).
-- `PUT /search-records/<id>`: Update an existing search record.
-  - Updatable fields: `query`, `location_ids` (list of saved location IDs).
-- `DELETE /search-records/<id>`: Delete a search record.
-
-### Weather Data Resource
-- `GET /weather-data`: Get all weather data.
-- `GET /weather-data/<id>`: Get a specific weather data entry by ID.
-- `POST /weather-data`: Create a new weather data entry.
-  - Required fields: `location_id`, `current_temperature`, `current_humidity`, `current_wind_speed`, `weather_condition`, `forecast_data`.
-- `PUT /weather-data/<id>`: Update an existing weather data entry.
-  - Updatable fields: `current_temperature`, `current_humidity`, `current_wind_speed`, `weather_condition`, `forecast_data`.
-- `DELETE /weather-data/<id>`: Delete a weather data entry.
-
-## Example API Requests and Responses
-
-### Creating a new user
-```
-POST /users
-Content-Type: application/json
-
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "password": "secure_password123"
-}
+```plaintext
+weather-watch-lite/
+│
+├── client/         # React frontend
+│   ├── src/
+│   ├── public/
+│   └── ...
+│
+└── server/         # Flask backend
+    ├── app.py
+    ├── models.py
+    ├── seed.py
+    └── ...
 ```
 
-Response:
+---
+
+##  Technologies Used
+
+###  Frontend (React + Vite)
+- **React**: Frontend library for building UI components
+- **Vite**: Fast build tool and development server
+- **React Router DOM**: Client-side routing
+- **Custom CSS**: For styling components and animations
+- **Fetch API**: For communicating with the Flask backend
+
+###  Backend (Flask REST API)
+- **Flask**: Python micro web framework
+- **Flask-RESTful**: RESTful API creation
+- **SQLAlchemy + Flask-SQLAlchemy**: ORM for database interactions
+- **Flask-Migrate**: Database migrations
+- **Flask-CORS**: Cross-Origin Resource Sharing
+- **Werkzeug**: Password hashing
+- **Faker**: Generates dummy data for development
+
+---
+
+##  Features
+
+###  User Authentication (Backend)
+- Register new users with email, username, and password
+- Passwords securely hashed using Werkzeug
+- Token-based authentication (JWT) planned for full implementation
+
+###  Weather Functionality
+- Search weather data by city or country name
+- Real-time data fetched from the backend (powered by OpenWeatherMap API)
+- View current temperature, humidity, wind speed, and weather conditions
+- View a 7-day forecast, each with temperature, condition, and humidity
+
+###  Saved Locations
+- Logged-in users can save their favorite cities
+- Revisit saved locations for quick weather updates
+- Delete saved locations from the dashboard
+
+###  Search History
+- Automatically records searches made by logged-in users
+- Useful for tracking previously checked locations
+
+---
+
+##  Local Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Velma96/weather-watch-lite.git
+cd weather-watch-lite
+```
+
+---
+
+## ⚙️ Backend Setup (Flask API)
+
+```bash
+cd server
+```
+
+### Create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate  
+```
+
+### Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Configure Environment Variables:
+
+Create a `.env` file with:
+
+```env
+FLASK_APP=app.py
+FLASK_ENV=development
+DATABASE_URI=sqlite:///weather_api.db
+SECRET_KEY=your_secret_key_here
+```
+
+### Run database migrations:
+
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+### Seed the database (optional, for development):
+
+```bash
+python seed.py
+```
+
+### Start the Flask server:
+
+```bash
+python app.py
+```
+
+> Your API will be available at: `http://localhost:5555`
+
+---
+
+## 🖼️ Frontend Setup (React + Vite)
+
+```bash
+cd client
+```
+
+### Install dependencies:
+
+```bash
+npm install
+```
+
+### Start the development server:
+
+```bash
+npm run dev
+```
+
+> Your frontend app will run at: `http://localhost:5173`
+
+---
+
+## 🌐 Frontend Pages
+
+| Page | Description |
+|------|-------------|
+| **Homepage** | Includes a hero section, a search bar, and default weather display |
+| **Dashboard** | Displays user's saved locations, and allows delete/save |
+| **SearchBar Component** | Accepts user input, calls the backend API, and conditionally renders save buttons |
+| **ForecastCard Component** | Displays a visual forecast summary for a 7-day period |
+| **Login/Signup** *(Planned)* | User auth and route guarding |
+
+---
+
+##  API Overview (Backend)
+
+Your Flask API provides these RESTful endpoints:
+
+### Users
+- `GET /users`: Get all users
+- `POST /users`: Create a new user
+- `PUT /users/<id>`: Update user details
+- `DELETE /users/<id>`: Remove a user
+
+### Saved Locations
+- `GET /saved-locations`: Get all saved locations
+- `POST /saved-locations`: Save a location
+- `DELETE /saved-locations/<id>`: Delete a location
+
+### Search Records
+- `POST /search-records`: Save a user search query
+- `GET /search-records`: Fetch past user searches
+
+### Weather
+- `GET /weather/search?location=<name>`: Get weather and forecast by city/country name
+- `GET /weather-data/<id>`: Retrieve stored weather data
+
+---
+
+##  Example Requests
+
+### POST `/users` (Register a user)
+
 ```json
 {
-  "id": 1,
-  "username": "john_doe",
-  "email": "john@example.com",
-  "created_at": "2025-04-10T12:00:00Z"
+  "username": "phoebe",
+  "email": "phoebe@example.com",
+  "password": "securepass123"
 }
 ```
 
-### Saving a location
-```
-POST /saved-locations
-Content-Type: application/json
+### GET `/weather/search?location=Nairobi`
 
-{
-  "user_id": 1,
-  "location_name": "New York, NY"
-}
-```
+Returns weather data and a 7-day forecast for Nairobi.
 
-Response:
-```json
-{
-  "id": 1,
-  "user_id": 1,
-  "location_name": "New York, NY",
-  "created_at": "2025-04-10T12:05:00Z"
-}
-```
+---
 
-## Error Handling
-The API returns standard HTTP status codes:
-- `200 OK`: Successful request
-- `201 Created`: Resource successfully created
-- `400 Bad Request`: Invalid request (missing or invalid parameters)
-- `404 Not Found`: Resource not found
-- `500 Internal Server Error`: Server-side error
+##  Search Functionality (Frontend)
 
-Error responses include a JSON object with an error message:
-```json
-{
-  "error": "User not found"
-}
-```
+The SearchBar component:
+- Accepts input and calls `http://localhost:5000/weather/search?location=<city>`
+- Handles errors and empty results
+- Shows a loading spinner during the request
+- Displays a “Save Location” button if the user is authenticated
 
-## Seeding the Database
-The `seed.py` script populates the database with fake data for testing and development purposes. It performs the following actions:
-- Creates 15 users, each with a unique username, email, and a hashed password.
-- Creates 1-3 saved locations for each user, using city names generated by Faker.
-- Generates weather data for each saved location, including current temperature, humidity, wind speed, weather condition, and a 7-day forecast.
-- Creates 2-4 search records for each user, using search queries generated by Faker.
-- Associates each search record with 1-2 saved locations that belong to the user.
+---
 
-## Authentication and Security
-The API uses Werkzeug for password hashing. However, a proper authentication system with token-based authentication (JWT) is planned for future implementation.
+##  Security and Authentication
 
-## To Do
-- Implement token-based authentication (JWT/OAuth)
-- Add unit and integration tests
-- Swagger/OpenAPI documentation
-- Rate limiting for API endpoints
-- Implement caching for weather data
+- Passwords are securely hashed using Werkzeug
+- JWT-based authentication is planned
+- Token stored in `localStorage` and sent in `Authorization` headers
 
-## Contributing
-Contributions are welcome! To contribute to this project, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Implement your changes and write tests.
-4. Submit a pull request.
+---
 
-## License
-[MIT License](LICENSE)
+##  Planned Enhancements
 
-## About
-This project was created as a demonstration of building a RESTful API with Flask. It lets users save favorite locations, fetch and view weather forecasts, and revisit past searches — making personal weather tracking easy and insightful.
+- [ ] Implement JWT login & protected routes
+- [ ] Add login/signup forms and auth context to frontend
+- [ ] Improve error UX (toasts, modals)
+- [ ] Add unit tests (backend and frontend)
+- [ ] Mobile responsiveness improvements
+- [ ] Add OpenAPI/Swagger documentation
+- [ ] Enable live weather updates with polling or sockets
+- [ ] Add support for weather alerts
+
+---
+
+##  Contributing
+
+Contributions are welcome! Here's how to get started:
+
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Make your changes
+4. Commit and push (`git commit -m 'Add my feature' && git push`)
+5. Submit a Pull Request
+
+---
+
+##  License
+
+This project is licensed under the [MIT License](LICENSE)
+
+---
+
+##  About the Project
+
+Weather Watch Lite is a project by **Phoebe Velma Awuor**, **Natalie Wanjiku**,**Ngugi Louis** and **Mohamed Issa**,designed to demonstrate how a software engineer can combine real-world APIs, user authentication, and frontend/backend integration to build a practical, data-driven weather app.
+
+---
