@@ -1,4 +1,3 @@
-# seed.py
 from faker import Faker
 import random
 from app import app
@@ -14,29 +13,25 @@ with app.app_context():
     db.drop_all()
     db.create_all()
     
-    print("Seeding users...")
-    users = []
-    for _ in range(15):
-        #Use generate_password_hash for proper password hashing
-        user = User(
-            username=faker.user_name(),
-            email=faker.email(),
-            password_hash=generate_password_hash(faker.password(length=10))
-        )
-        users.append(user)
-        db.session.add(user)
+    print("Seeding default user...")
+    default_user = User(
+        username="default",
+        email="default@example.com",
+        password_hash=generate_password_hash("default")
+    )
+    db.session.add(default_user)
     db.session.commit()
     
     print("Seeding saved locations and weather data...")
     saved_locations = []
-    for user in users:
-        for _ in range(random.randint(1, 3)):
-            location = SavedLocation(
-                user_id=user.id,
-                location_name=faker.city()
-            )
-            db.session.add(location)
-            saved_locations.append(location)
+    test_locations = ['New York', 'London', 'Tokyo']
+    for loc_name in test_locations:
+        location = SavedLocation(
+            user_id=default_user.id,
+            location_name=loc_name
+        )
+        db.session.add(location)
+        saved_locations.append(location)
     db.session.commit()
     
     for location in saved_locations:
@@ -44,11 +39,10 @@ with app.app_context():
         for i in range(7):
             forecast_data.append({
                 "day": i + 1,
-                "temperature": round(random.uniform(-10, 35), 1), 
+                "temperature": round(random.uniform(-10, 35), 1),
                 "humidity": random.randint(20, 100),
                 "condition": random.choice(weather_conditions)
             })
-        
         weather = WeatherData(
             location_id=location.id,
             current_temperature=round(random.uniform(-10, 35), 1),
@@ -60,26 +54,4 @@ with app.app_context():
         db.session.add(weather)
     db.session.commit()
     
-    print("Seeding search records...")
-    for user in users:
-        user_locations = [loc for loc in saved_locations if loc.user_id == user.id]
-        for _ in range(random.randint(2, 4)):
-            query = f"{faker.city()} weather"
-            search = SearchRecord(
-                user_id=user.id,
-                query=query
-            )
-            db.session.add(search)
-            db.session.commit()  
-            
-            
-            if user_locations: 
-                linked_locations = random.sample(user_locations, min(len(user_locations), random.randint(1, 2)))
-                for loc in linked_locations:
-                    db.session.execute(search_records_locations.insert().values(
-                        search_record_id=search.id,
-                        saved_location_id=loc.id
-                    ))
-    
-    db.session.commit()
     print("Seeding complete.")
