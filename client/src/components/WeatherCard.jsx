@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/WeatherCard.css';
+import { API_BASE } from '../config';
 
 function WeatherCard() {
   const { location } = useParams();
@@ -9,31 +10,28 @@ function WeatherCard() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
+    const fetchWeather = async () => {
       try {
-        setLoading(true);  // Start loading
-        const response = await fetch(`http://localhost:5000/weather/search?location=${location}`);
-        
+        const response = await fetch(`${API_BASE}/weather-data?location=${encodeURIComponent(location)}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch weather data');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to fetch weather data');
         }
-
         const data = await response.json();
-
-        // Check if location data is valid
-        if (!data || !data.temp) {
-          throw new Error('Location not found');
-        }
-
-        setWeather(data);
+        setWeather({
+          temp: data.current_temperature,
+          condition: data.weather_condition,
+          humidity: data.current_humidity,
+          wind_speed: data.current_wind_speed,
+        });
       } catch (err) {
-        setError(err.message);  // Handle errors
+        setError(err.message);
       } finally {
-        setLoading(false);  // End loading
+        setLoading(false);
       }
     };
 
-    fetchWeatherData();
+    fetchWeather();
   }, [location]);
 
   return (
@@ -54,5 +52,3 @@ function WeatherCard() {
 }
 
 export default WeatherCard;
-
-

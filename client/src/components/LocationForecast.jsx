@@ -7,7 +7,7 @@ function LocationForecast() {
   return (
     <div className="location-forecast">
       <h2>Weather Forecast for {location}</h2>
-      <ForecastCard location={location} /> {/* Use ForecastCard for the selected location */}
+      <ForecastCard location={location} />
     </div>
   );
 }
