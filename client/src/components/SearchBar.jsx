@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/SearchBar.css';
+import { API_BASE } from '../config';
 
-function SearchBar() {
+function SearchBar({ onLocationSaved }) {
   const [location, setLocation] = useState('');
   const [error, setError] = useState('');
   const [weatherData, setWeatherData] = useState(null);
@@ -19,59 +20,61 @@ function SearchBar() {
     }
 
     setError('');
-    setIsLoading(true); // start loading
+    setIsLoading(true);
 
     try {
       const data = await fetchWeatherData(location);
-      if (data && data.temp) {
+      if (data && data.current_temperature) {
         setWeatherData(data);
         setIsLocationValid(true);
       } else {
-        setError('Location not found. Please try again.');
+        setError('Unable to retrieve weather data.');
         setWeatherData(null);
         setIsLocationValid(false);
       }
     } catch (err) {
-      setError('Error fetching weather data. Please try again.');
+      setError(err.message);
       setWeatherData(null);
       setIsLocationValid(false);
     } finally {
-      setIsLoading(false); // stop loading
+      setIsLoading(false);
     }
   };
 
   const fetchWeatherData = async (location) => {
-    const response = await fetch(`http://localhost:5000/weather/search?location=${location}`);
+    const response = await fetch(`${API_BASE}/weather-data?location=${encodeURIComponent(location)}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch weather data');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to fetch weather data');
     }
     return await response.json();
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('You must be logged in to save a location.');
-      return;
-    }
-
     try {
-      const response = await fetch('http://localhost:5000/saved_locations', {
+      const response = await fetch(`${API_BASE}/saved-locations`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ location })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location_name: location }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save location');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to save location');
       }
 
+      const savedData = await response.json();
+      if (onLocationSaved) {
+        onLocationSaved({
+          id: savedData.id,
+          user_id: savedData.user_id,
+          location_name: savedData.location_name,
+          created_at: savedData.created_at || new Date().toISOString(),
+        }); // Ensure data matches savedLocations structure
+      }
       navigate('/dashboard');
     } catch (err) {
-      setError('Error saving location. Try again.');
+      setError(err.message);
     }
   };
 
@@ -84,16 +87,25 @@ function SearchBar() {
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Enter city or country"
         />
-        <button type="submit">Search</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Searching...' : 'Search'}
+        </button>
       </form>
 
-      {isLoading && <div className="loader"></div>}
-
-      {error && <p>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       {isLocationValid && !isLoading && (
         <div className="save-button fade-in">
           <button onClick={handleSave}>Save Location</button>
+        </div>
+      )}
+
+      {weatherData && !isLoading && (
+        <div className="weather-preview">
+          <p>Temperature: {weatherData.current_temperature}°C</p>
+          <p>Condition: {weatherData.weather_condition}</p>
+          <p>Humidity: {weatherData.current_humidity}%</p>
+          <p>Wind Speed: {weatherData.current_wind_speed} km/h</p>
         </div>
       )}
     </div>
@@ -101,9 +113,3 @@ function SearchBar() {
 }
 
 export default SearchBar;
-
-
-
-
-
-

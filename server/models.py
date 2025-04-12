@@ -12,7 +12,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    password_hash = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)  # Stores hashed password
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -26,6 +26,8 @@ class User(db.Model, SerializerMixin):
         if 'updated_at' in data:
             data['updated_at'] = data['updated_at'].isoformat() if data['updated_at'] else None
         return data
+
+# ... (other models remain unchanged)
 
 # Association table
 search_records_locations = db.Table(
