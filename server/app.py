@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from extensions import db, migrate, cors
 from flask_restful import Api
@@ -9,7 +10,7 @@ def create_app():
     # Load configurations from .env
     app.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URL', default='sqlite:///weather.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['CORS_ORIGINS'] = config('FRONTEND_URL', default='http://localhost:5173')
+    app.config['CORS_ORIGINS'] = config('FRONTEND_URL', default='http://localhost:5173').split(',')
     app.json.compact = False
     
     # Initialize extensions
@@ -63,4 +64,5 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    port = int(os.environ.get("PORT", 5555))
+    app.run(host="0.0.0.0", port=port)
