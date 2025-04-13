@@ -16,7 +16,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app, origins=app.config['CORS_ORIGINS'])
+    cors.init_app(app, origins=app.config['CORS_ORIGINS'], supports_credentials=True)
     
     # Create API instance
     api_instance = Api(app)
