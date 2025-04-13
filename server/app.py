@@ -10,7 +10,7 @@ def create_app():
     # Load configurations from .env
     app.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URL', default='sqlite:///weather.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['CORS_ORIGINS'] = config('FRONTEND_URL', default='http://localhost:5173').split(',')
+    app.config['CORS_ORIGINS'] = config('FRONTEND_URL', default='http://localhost:5173,https://weather-watch-lite-1-5aa2.onrender.com').split(',')
     app.json.compact = False
     
     # Initialize extensions
