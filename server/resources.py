@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 from models import User, SavedLocation, SearchRecord, WeatherData
 from extensions import db
 from datetime import datetime
@@ -152,48 +152,60 @@ class SavedLocationResource(Resource):
             return {"error": f"Failed to delete location: {str(e)}"}, 400
 class SearchRecordResource(Resource):
     def get(self, id=None):
-        try:
-            if id:
-                record = SearchRecord.query.get(id)
-                if not record:
-                    return {"error": "Search record not found"}, 404
-                return {
-                    "id": record.id,
-                    "user_id": record.user_id,
-                    "query": record.query,
-                    "created_at": record.created_at.isoformat(),
-                    "saved_locations": [{"id": loc.id, "location_name": loc.location_name} for loc in record.saved_locations]
-                }, 200
-            records = SearchRecord.query.all()
-            return [{
-                "id": rec.id,
-                "user_id": rec.user_id,
-                "query": rec.query,
-                "created_at": rec.created_at.isoformat(),
-                "location_count": len(rec.saved_locations)
-            } for rec in records], 200
-        except Exception as e:
-            return {"error": f"Server error: {str(e)}"}, 500
+            try:
+                if id:
+                    record = SearchRecord.query.get(id)
+                    if not record:
+                        return jsonify({"error": "Search record not found"}), 404
+
+                    return jsonify({
+                        "id": record.id,
+                        "user_id": record.user_id,
+                        "search_term": record.search_term,
+                        "created_at": record.created_at.isoformat(),
+                        "saved_locations": [
+                            {"id": loc.id, "location_name": loc.location_name}
+                            for loc in record.saved_locations
+                        ]
+                    }), 200
+
+                records = SearchRecord.query.all()
+                all_data = [{
+                    "id": rec.id,
+                    "user_id": rec.user_id,
+                    "search_term": rec.search_term,
+                    "created_at": rec.created_at.isoformat(),
+                    "location_count": len(rec.saved_locations)
+                } for rec in records]
+
+                return jsonify(all_data), 200
+
+            except Exception as e:
+                return jsonify({"error": f"Server error: {str(e)}"}), 500
 
     def post(self):
         try:
             data = request.get_json()
-            if not all(key in data for key in ['query']):
-                return {"error": "Missing required field (query)"}, 400
-            record = SearchRecord(user_id=1, query=data['query'])
+            if not data or 'search_term' not in data:
+                return jsonify({"error": "Missing required field (search_term)"}), 400
+
+            record = SearchRecord(user_id=1, search_term=data['search_term'])
             db.session.add(record)
             db.session.commit()
-            return {
+
+            response = {
                 "id": record.id,
                 "user_id": record.user_id,
-                "query": record.query,
+                "search_term": record.search_term,
                 "location_count": len(record.saved_locations),
                 "message": "Search record created successfully"
-            }, 201
+            }
+
+            return jsonify(response), 201  # ✅ Explicit JSON response
+
         except Exception as e:
             db.session.rollback()
-            return {"error": f"Failed to create search record: {str(e)}"}, 400
-
+            return jsonify({"error": f"Failed to create search record: {str(e)}"}), 500
 class WeatherDataResource(Resource):
     def get(self, id=None):
         try:

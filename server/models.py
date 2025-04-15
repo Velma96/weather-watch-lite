@@ -27,8 +27,6 @@ class User(db.Model, SerializerMixin):
             data['updated_at'] = data['updated_at'].isoformat() if data['updated_at'] else None
         return data
 
-# ... (other models remain unchanged)
-
 # Association table
 search_records_locations = db.Table(
     'search_records_locations',
@@ -66,7 +64,7 @@ class SearchRecord(db.Model, SerializerMixin):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    query = db.Column(db.String, nullable=False)
+    search_term = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = relationship('User', back_populates='search_records')
